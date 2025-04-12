@@ -1,112 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import { Button, Typography, Box, CircularProgress, Grid, InputLabel, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import {
+  Typography,
+  Box,
+  CircularProgress,
+  Grid,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 
-import { getListaServiciosPorPsicologo } from '@/app/services/profilePsicology.service';
-import { getCitaByPsicologo } from '@/app/services/cita.service';
-// import { getCitaByPsicologo } from '@/app/services/cita.service';
+import { getListaServiciosPorPsicologo } from "@/app/services/profilePsicology.service";
+import { getCitaByPsicologo } from "@/app/services/cita.service";
 
-const AvailabilityPicker = () => {
+
+const AvailabilityPicker = ({ getHour, getDate, defaultvalue, psicologoid} ) => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selected, setSelected] = useState(defaultvalue);
   const [availableHours, setAvailableHours] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [idPsicologo, setidPsicologo] = useState(3);
-  const [servicios, setServicios] = useState([]); 
-  const [servicioSelected, setservicioSelected] = useState(0);
-  
-  const GetServiciosPorPsicologo = async (id) => {
-    try {
-      const data = await getListaServiciosPorPsicologo(id);
-      if (data != undefined) {
-        setServicios(data ?? []);
-      }
-    } catch (error) {
-      console.log("GetServiciosPorPsicologo", error);
-    }
-  };
+  const [idPsicologo, setidPsicologo] = useState(psicologoid);
 
   const getHourAvailable = async (idPsicologo, fecha) => {
     try {
       const data = await getCitaByPsicologo(idPsicologo, fecha);
-     
+
       if (data != undefined) {
-        let listaHora = data.map( x=> x.horaInicio)
-       
+        let listaHora = data.map((x) => x.horaInicio);
+
         setAvailableHours(listaHora ?? []);
       }
     } catch (error) {
       console.log("getHourAvailable", error);
     }
-  }
-  
-  const ListSelectServicios =() =>{
-    
-    let list = servicios.map((a, y) => (
-      <MenuItem key={y+1} value={a.id}>
-        {a.servicioNombre}
-      </MenuItem>
-    ));
-
-    list.unshift( 
-      <MenuItem key={0} value={0}>
-        {"[Seleccione un servicio]"}
-      </MenuItem>)
-
-    return list
-  }
-  
-  const GetavailableHourByPsicology = (idPsicologo, date ) =>{
-    getHourAvailable(idPsicologo, date);
-
-  }
-
-  const handleSelectChange = (event) => {
-    setservicioSelected(event.target.value);
   };
 
-  useEffect(() => { 
-    GetServiciosPorPsicologo(idPsicologo);    
-  }, []);
-    
+  const GetavailableHourByPsicology = (idPsicologo, date) => {
+    getHourAvailable(idPsicologo, date);
+  };
+
   // Simulate fetching available hours based on the selected date
   useEffect(() => {
     if (selectedDate) {
-      GetavailableHourByPsicology(idPsicologo, selectedDate)
+      GetavailableHourByPsicology(idPsicologo, selectedDate);
     } else {
       setAvailableHours([]);
     }
   }, [selectedDate]);
 
-  const formatHour = (hour) => {
-    if(hour == "") return "";
+  useEffect(() => {
+    console.log("idPsicologo", psicologoid);
+  }, []);
 
-    let _hour = dayjs(`2000-01-01T${hour}`).format('HH:mm');
-    return _hour
-  }
+  const formatHour = (hour) => {
+    if (hour == "") return "";
+
+    let _hour = dayjs(`2000-01-01T${hour}`).format("HH:mm");
+    return _hour;
+  };
+
+  const handleSelection = (option) => {
+    setSelected(option);
+    getDate(selectedDate.format("YYYY-MM-DD"));
+    getHour(formatHour(option))
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4, p: 3 }}>
-        <Typography variant="h6" gutterBottom align="center">
-          Select a Day and Time
+      <Box sx={{ maxWidth: 600 }}>
+        <Typography variant="body1" gutterBottom align="center">
+          Seleccionar fecha y hora
         </Typography>
-         <InputLabel id="Servicio-label">Servicio</InputLabel>
-            <Select
-              labelId="Servicio-label"
-              id="servicio"
-              name="servicio"
-              value={servicioSelected}
-              onChange={handleSelectChange}
-              label="Servicio"
-              defaultValue="0"
-            >
-            {ListSelectServicios()}
-            
-            </Select>
-        {/* DateCalendar Component */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
           <DateCalendar
             value={selectedDate}
             onChange={(newDate) => setSelectedDate(newDate)}
@@ -114,28 +83,60 @@ const AvailabilityPicker = () => {
           />
         </Box>
 
-        {/* Display Available Hours */}
         {selectedDate && (
           <Box>
-            <Typography variant="h6" gutterBottom align="center">
-              Horas disponibles {selectedDate.format('YYYY-MM-DD')}
+            <Typography variant="body1" sx={{mb: 3}} gutterBottom align="center">
+              Horas disponibles del dia {selectedDate.format("YYYY-MM-DD")}
             </Typography>
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <CircularProgress />
               </Box>
             ) : availableHours.length > 0 ? (
               <Grid container spacing={2} justifyContent="center">
-                {availableHours.map((hour, index) => (
-                  <Grid item key={index}>
-                    <Button variant="contained" color="primary">
-                      {formatHour(hour)}
-                    </Button>
-                  </Grid>
-                ))}
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    value={selected}
+                    onChange={(e) => handleSelection(formatHour(e.target.value))}
+                  >
+                    <Grid container spacing={0}>
+                      {availableHours.map((option, index) => (
+                        <Grid item xs={4} key={index}>
+                          <Box
+                            onClick={() => handleSelection(formatHour(option))}
+                            sx={{
+                              boxShadow: 3,
+                              border:
+                              selected === option
+                                  ? "2px solid blue"
+                                  : "2px solid white",
+                              transition: "0.3s",
+                              mt: 0.5,
+                              p: 0.5,
+                              borderRadius: 2,
+                              maxWidth: 100,
+                              cursor: "pointer"
+                            }}
+                          >
+                            <FormControlLabel
+                              value={formatHour(option)}
+                              control={<Radio size="small" />} // Hace el radio más pequeño
+                              label={
+                                <Typography variant="body2">
+                                  {formatHour(option)}
+                                </Typography>
+                              } // Reduce la fuente
+                              sx={{ width: "100%" }}
+                            />
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </RadioGroup>
+                </FormControl>
               </Grid>
             ) : (
-              <Typography align="center">No hay horas disponibles.</Typography>
+              <Typography align="center">No hay horas disponibles. </Typography>
             )}
           </Box>
         )}

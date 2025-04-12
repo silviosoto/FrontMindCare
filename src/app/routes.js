@@ -39,6 +39,16 @@ export const Routes = [
 		path: "/psicologo",
 		roles: [ "Paciente" ]
 	},
+	{
+		name: "appointment",
+		path: "/appointment",
+		roles: [ "Paciente" ]
+	},
+	{
+		name: "cita",
+		path: "/cita",
+		roles: [ "Paciente" ]
+	},
 	// {
 	// 	name: "registrerpacient",
 	// 	path: "/registrerPacient",

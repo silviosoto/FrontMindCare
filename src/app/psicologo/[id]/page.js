@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ import {
   Select,
   InputLabel,
   MenuItem,
+  Button,
 } from "@mui/material";
 import {
   getPsicologo,
@@ -36,7 +38,7 @@ export default function Page() {
   const [hobbies, setHobbies] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [idDatosPersonales, setIdDatosPersonales] = useState(null);
-  
+  const router = useRouter();
 
   const GetPsicologo = async (id) => {
     if (id == null) return;
@@ -75,6 +77,10 @@ export default function Page() {
       console.log("GetHobiesPorPsicologo", error);
     }
 
+  };
+
+  const handleClick = () => {
+    router.push(`/appointment?psicologo=${id}&age=30`);
   };
 
   // const GetServiciosPorPsicologo = async (id) => {
@@ -191,7 +197,10 @@ export default function Page() {
                              >
                                {ListSelectServicios()}
                              </Select> */}
-                <AvailabilityPicker></AvailabilityPicker>
+                {/* <AvailabilityPicker></AvailabilityPicker> */}
+            </Box>
+            <Box align="center">
+                <Button  onClick={handleClick} variant="contained" >Apartar cita</Button>
             </Box>
           </Grid>
           {/* hobies */}
