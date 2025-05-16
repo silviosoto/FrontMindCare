@@ -21,12 +21,12 @@ import { getListaServiciosPorPsicologo } from "@/app/services/profilePsicology.s
 import { useAppContext } from "../context/context";
 import { createCita } from "../Services/cita.service";
 import { getPaciente } from "../Services/Paciente.service";
+import { useSimpleAlert, useConfirmationAlert } from "../hooks/useSwal";
 
 export default function Appointment() {
   const [activeStep, setActiveStep] = useState(0);
   const searchParams = useSearchParams();
   const psicologo = searchParams.get("psicologo");
-  const age = searchParams.get("age");
   const [idPsicologo, setidPsicologo] = useState(psicologo);
   const [servicios, setServicios] = useState([]);
   const [servicioSelected, setservicioSelected] = useState(0);
@@ -34,6 +34,8 @@ export default function Appointment() {
   const [date, setDate] = useState("");
   const [paciente, setPaciente] = useState(null);
   const { user } = useAppContext();
+  const simpleAlert = useSimpleAlert();
+
 
   const GetServiciosPorPsicologo = async (id) => {
     try {
@@ -46,11 +48,10 @@ export default function Appointment() {
     }
   };
 
-  // Validation schemas
-  const stepSchemas =Yup.object({
+  const stepSchemas = Yup.object({
     idservicio: Yup.number()
-    .moreThan(0, "Seleccione un servicio")
-    .required("Seleccione un servicio"),
+      .moreThan(0, "Seleccione un servicio")
+      .required("Seleccione un servicio"),
     idpsicologo: Yup.number(),
     hora: Yup.string().required("Seleccione una hora"),
     motivoconsulta: Yup.string().required("Esciba porque desea la consulta"),
@@ -58,18 +59,18 @@ export default function Appointment() {
 
   const apartarCita = async (values) => {
     try {
-      
-      if (paciente == null) return
-      if (date == "") return
-      
-      const cita ={
+      console.log("values", date);
+      if (paciente == null) return;
+      if (date == "") return;
+
+      const cita = {
         idpsicologo: values.idpsicologo,
-        idpaciente: paciente.id , 
+        idpaciente: paciente.id,
         hora: `${values.hora}:00`, // hora seleccionada
         fecha: date, // del calendario
-        motivoconsulta: values.motivoconsulta
-      }
-      
+        motivoconsulta: values.motivoconsulta,
+      };
+
       const data = await createCita(
         parseInt(cita.idpsicologo),
         cita.idpaciente,
@@ -77,16 +78,15 @@ export default function Appointment() {
         cita.fecha,
         cita.motivoconsulta
       );
-
-      if (data != null) {
-        console.log("createcita", data);
-      }
+     
+      simpleAlert("cita creada exitosamente", "", "success");
+    
     } catch (error) {
       console.log("createcita", error);
+      simpleAlert("Algo salió mal", "", "error"); 
     }
-  }
+  };
 
-  // Formik setup
   const formik = useFormik({
     initialValues: {
       idservicio: 0,
@@ -97,26 +97,20 @@ export default function Appointment() {
     validateOnChange: false,
     validationSchema: stepSchemas,
     onSubmit: (values) => {
-      // alert(JSON.stringify(values, null, 2));
-      // console.log(JSON.stringify(values, null, 2));
-      //apartar la cita
-     
       apartarCita(values);
-      return 
-      
+      return;
     },
   });
 
   // Handle navigation
   const handleNext = async () => {
     const errors = await formik.validateForm();
-     
-    if ( Object.keys(errors).length == 0 ) {
+
+    if (Object.keys(errors).length == 0) {
       setActiveStep((prev) => prev + 1);
-    }else{
+    } else {
       formik.submitForm();
     }
-  
   };
 
   const handleBack = () => {
@@ -138,37 +132,34 @@ export default function Appointment() {
 
     return list;
   };
- 
+
   const getInfoPaciente = async (id) => {
     try {
-      if (user == null) return
+      if (user == null) return;
 
       const data = await getPaciente(id);
-     if (data != undefined) {
-        const {paciente} = data;
+      if (data != undefined) {
+        const { paciente } = data;
         setPaciente(paciente);
-     }
-      
+      }
     } catch (error) {
       console.log("getPaciente", error);
     }
   };
 
   useEffect(() => {
-    console.log("USER", user);
     GetServiciosPorPsicologo(idPsicologo);
   }, []);
 
   useEffect(() => {
+    if (user == null) return;
     getInfoPaciente(user.userid);
   }, [user]);
-    
-  useEffect(()=>{
-    formik.setFieldValue("hora", hour);
-    //lueg  validar hora poniendo el componente en rojo cuando no se ha seleccionado
-    
-  }, [hour])
 
+  useEffect(() => {
+    formik.setFieldValue("hora", hour);
+  }, [hour]);
+ 
   return (
     <Box sx={{ width: "100%", mx: "auto", mt: 4 }} spacing={2}>
       {/* Stepper Navigation */}
@@ -183,114 +174,112 @@ export default function Appointment() {
           <StepLabel>Fin</StepLabel>
         </Step>
       </Stepper>
- 
-      <Box sx={{ mt: 4 }} component="form" onSubmit={formik.handleSubmit}>
-      {/* onSubmit={formik.handleSubmit} */}
-      
-          <Grid container>
-            {activeStep === 0 && (
-              <>
-                <Grid
-                  size={{ xs: 4, md: 4 }}
-                >
-                  <Grid container spacing={2} >
-                    <Grid size={12}>
-                      <InputLabel id="Servicio-label">Servicio</InputLabel>
-                      <Select
-                        fullWidth
-                        labelId="Servicio-label"
-                        // id="idservicio"
-                        name="idservicio"
-                        label="Servicio"
-                        // defaultValue="0"
-                        value={formik.values.idservicio}
-                        onChange={formik.handleChange}
-                      >
-                        {ListSelectServicios()}
-                      </Select>
-                      {formik.touched.idservicio && (
-                        <FormHelperText error >{formik.errors.idservicio}</FormHelperText>
-                      )}
-                    </Grid>
 
-                    <Grid size={12}>
-                      <TextField
-                        fullWidth
-                        name="motivoconsulta"
-                        label="Motivo de consulta"
-                        multiline
-                        rows={4}
-                        value={formik.values.motivoconsulta}
-                        onChange={formik.handleChange}
-                        error={formik.touched.motivoconsulta && Boolean(formik.errors.motivoconsulta)}
-                        helperText={formik.touched.motivoconsulta && formik.errors.motivoconsulta}
-                      />
-                    </Grid>
-                  
+      <Box sx={{ mt: 4 }} component="form" onSubmit={formik.handleSubmit}>
+        <Grid container>
+          {activeStep === 0 && (
+            <>
+              <Grid size={{ xs: 4, md: 4 }}>
+                <Grid container spacing={2}>
+                  <Grid size={12}>
+                    <InputLabel id="Servicio-label">Servicio</InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="Servicio-label"
+                      name="idservicio"
+                      label="Servicio"
+                      value={formik.values.idservicio}
+                      onChange={formik.handleChange}
+                    >
+                      {ListSelectServicios()}
+                    </Select>
+                    {formik.touched.idservicio && (
+                      <FormHelperText error>
+                        {formik.errors.idservicio}
+                      </FormHelperText>
+                    )}
+                  </Grid>
+
+                  <Grid size={12}>
+                    <TextField
+                      fullWidth
+                      name="motivoconsulta"
+                      label="Motivo de consulta"
+                      multiline
+                      rows={4}
+                      value={formik.values.motivoconsulta}
+                      onChange={formik.handleChange}
+                      error={
+                        formik.touched.motivoconsulta &&
+                        Boolean(formik.errors.motivoconsulta)
+                      }
+                      helperText={
+                        formik.touched.motivoconsulta &&
+                        formik.errors.motivoconsulta
+                      }
+                    />
                   </Grid>
                 </Grid>
+              </Grid>
 
-                <Grid   size={{ xs: 8, md: 8 }}>
-                  <AvailabilityPicker 
-                    getHour={setHour}
-                    getDate={setDate}
-                    defaultvalue={hour} 
-                    psicologoid={3} />
-
-                  {formik.touched.hora && (
-                        <FormHelperText error>{formik.errors.hora}</FormHelperText>
-                      )}
-                </Grid>
-              </>
-            )}
-
-            {activeStep === 1 && (
-              <>
-                <TextField
-                  fullWidth
-                  label="Age"
-                  name="age"
-                  type="number"
-                  value={formik.values.age}
-                  onChange={formik.handleChange}
-                  error={formik.touched.age && Boolean(formik.errors.age)}
-                  helperText={formik.touched.age && formik.errors.age}
-                  margin="normal"
+              <Grid size={{ xs: 8, md: 8 }}>
+                <AvailabilityPicker
+                  getHour={setHour}
+                  getDate={setDate}
+                  defaultvalue={hour}
+                  psicologoid={3}
                 />
-                <TextField
-                  fullWidth
-                  label="Country"
-                  name="country"
-                  value={formik.values.country}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.country && Boolean(formik.errors.country)
-                  }
-                  helperText={formik.touched.country && formik.errors.country}
-                  margin="normal"
-                />
-              </>
-            )}
-          </Grid>
+                {formik.touched.hora && (
+                  <FormHelperText error>{formik.errors.hora}</FormHelperText>
+                )}
+              </Grid>
+            </>
+          )}
 
-          {/* Navigation Buttons */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            {activeStep > 0 && (
-              <Button variant="outlined" onClick={handleBack}>
-                Back
-              </Button>
-            )}
-            {activeStep < 1 ? (
-              <Button variant="contained" onClick={handleNext}>
-                Siguiente
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained" color="primary">
-                Submit
-              </Button>
-            )}
-          </Box>
-        
+          {activeStep === 1 && (
+            <>
+              <TextField
+                fullWidth
+                label="Age"
+                name="age"
+                type="number"
+                value={formik.values.age}
+                onChange={formik.handleChange}
+                error={formik.touched.age && Boolean(formik.errors.age)}
+                helperText={formik.touched.age && formik.errors.age}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Country"
+                name="country"
+                value={formik.values.country}
+                onChange={formik.handleChange}
+                error={formik.touched.country && Boolean(formik.errors.country)}
+                helperText={formik.touched.country && formik.errors.country}
+                margin="normal"
+              />
+            </>
+          )}
+        </Grid>
+
+        {/* Navigation Buttons */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+          {activeStep > 0 && (
+            <Button variant="outlined" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          {activeStep < 1 ? (
+            <Button variant="contained" onClick={handleNext}>
+              Siguiente
+            </Button>
+          ) : (
+            <Button type="submit" variant="contained" color="primary">
+              Submit
+            </Button>
+          )}
+        </Box>
       </Box>
     </Box>
   );

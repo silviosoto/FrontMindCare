@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 const ProfileList = ({ profiles }) => {
   const router = useRouter();
   const handleViewProfile = (id) => {
-    router.push(`/psicologo/${id}`); // Navega dinámicamente al perfil
+    router.push(`/psicologo/${id}`); 
   };
 
   return (
@@ -20,9 +20,10 @@ const ProfileList = ({ profiles }) => {
         gap: 1
       }}
     >
-      {profiles.map((profile) => (
+      {profiles.map((profile, index) => (
         <>
           <ProfileCard
+            key={index}
             id={profile.id}
             name={profile.nombre}
             phone={profile.telefono}

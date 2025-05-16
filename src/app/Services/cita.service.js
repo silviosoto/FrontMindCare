@@ -56,3 +56,49 @@ export const CancelAppointment= async(idCita) => {
         console.log(ex)
     }
 };
+
+
+export const createRoom = async (PacienteId, PsicologoId, HoraCita, IdCita ) =>{
+    try {
+
+        const data = await post(`daily/create-room`, {
+            PacienteId, PsicologoId, HoraCita, IdCita
+        });
+        
+        const result = data ? data : null;
+        return result
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getSala = async (PacienteId) =>{
+    try {
+
+        const data = await post(`cita`, {
+            PacienteId
+        });
+        
+        const result = data ? data : null;
+        return result
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+export const confirmAppointment = async (idCita) =>{
+    try {
+
+        const data = await get(`cita/confirmar/${idCita}`);
+                
+        const result = data ? data : null;
+        return result
+
+    } catch (error) {
+        console.log(error);
+    }
+}

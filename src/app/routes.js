@@ -40,15 +40,20 @@ export const Routes = [
 		roles: [ "Paciente" ]
 	},
 	{
-		name: "appointment",
-		path: "/appointment",
-		roles: [ "Paciente" ]
-	},
-	{
 		name: "cita",
 		path: "/cita",
 		roles: [ "Paciente" ]
 	},
+	{
+		name: "appointment",
+		path: "/appointment",
+		roles: [ "Paciente" ]
+	},
+	// {
+	// 	name: "call",
+	// 	path: "/call",
+	// 	roles: [ "Paciente", "Psicologo" ]
+	// },
 	// {
 	// 	name: "registrerpacient",
 	// 	path: "/registrerPacient",

@@ -80,7 +80,7 @@ export default function Page() {
   };
 
   const handleClick = () => {
-    router.push(`/appointment?psicologo=${id}&age=30`);
+    router.push(`/appointment?psicologo=${id}`);
   };
 
   // const GetServiciosPorPsicologo = async (id) => {

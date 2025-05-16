@@ -30,7 +30,8 @@ const AvailabilityPicker = ({ getHour, getDate, defaultvalue, psicologoid} ) => 
       const data = await getCitaByPsicologo(idPsicologo, fecha);
 
       if (data != undefined) {
-        let listaHora = data.map((x) => x.horaInicio);
+        let horaActual = dayjs().format("HH:mm"); 
+        let listaHora = data.map((x) => x.horaInicio );
 
         setAvailableHours(listaHora ?? []);
       }
@@ -43,7 +44,6 @@ const AvailabilityPicker = ({ getHour, getDate, defaultvalue, psicologoid} ) => 
     getHourAvailable(idPsicologo, date);
   };
 
-  // Simulate fetching available hours based on the selected date
   useEffect(() => {
     if (selectedDate) {
       GetavailableHourByPsicology(idPsicologo, selectedDate);
@@ -68,7 +68,17 @@ const AvailabilityPicker = ({ getHour, getDate, defaultvalue, psicologoid} ) => 
     getDate(selectedDate.format("YYYY-MM-DD"));
     getHour(formatHour(option))
   };
-
+ const disablecheck= (hour) => {
+  const date = selectedDate.format("YYYY-MM-DD");
+  const  currentDate = dayjs().format("YYYY-MM-DD");
+  if (date == currentDate ) {
+    const currentHour = dayjs().format("HH:mm");
+    console.log("currentDate", hour , currentHour, hour > currentHour);
+    return  currentHour > hour ; // Compare the hour with the current hour
+  }
+  return false; // For future dates, all hours are available
+ } 
+ 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ maxWidth: 600 }}>
@@ -120,7 +130,7 @@ const AvailabilityPicker = ({ getHour, getDate, defaultvalue, psicologoid} ) => 
                           >
                             <FormControlLabel
                               value={formatHour(option)}
-                              control={<Radio size="small" />} // Hace el radio más pequeño
+                              control={<Radio size="small"  disabled ={disablecheck(option)} />} // Hace el radio más pequeño
                               label={
                                 <Typography variant="body2">
                                   {formatHour(option)}
