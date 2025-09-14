@@ -22,7 +22,7 @@ import {
   useSimpleAlert,
   useConfirmationAlert
 } from "../hooks/useSwal";
-import {SignInCard} from "../../components/SignInCard";
+
 const defaultTheme = createTheme();
 
 export default function SignIn() {
@@ -71,7 +71,50 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-         <SignInCard />
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Login
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Email"
+              name="username"
+              autoComplete="email"
+              autoFocus
+              {...register('username', { required: 'El correo electrónico es obligatorio' })}
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ''}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              {...register('password', { required: 'La contraseña es obligatoria' })}
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ''}
+            />
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Entrar
+            </Button>
+          
+          </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>

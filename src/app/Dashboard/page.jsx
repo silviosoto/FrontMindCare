@@ -9,34 +9,20 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
+import IconButton from "@mui/material/IconButton"; 
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useCookie } from "../hooks/useCookie.hook";
-import { get, postNoAutenticate, put, del } from "../Services/apiService";
+import Link from "@mui/material/Link"; 
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";   
 import { useRouter } from "next/navigation";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
 import { Routes } from "../routes";
 import { useAppContext } from "../../app/context/context";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight"; 
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { NavBar } from "../layouts/NavBar.layout";
 
-import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
 const drawerWidth = 240;
 
-const AppBar = styled(MuiAppBar, {
+ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
@@ -85,54 +71,28 @@ const defaultTheme = createTheme();
 
 function Dashboard() {
   const [open, setOpen] = useState(true);
-  const router = useRouter();
-  const cookies = useCookie();
-    const { user } = useAppContext();
+  const { user } = useAppContext();
   const toggleDrawer = () => {
-    console.log("open*>", open)
     setOpen(!open);
   };
 
-  const {
-    push
-  } = useRouter();
-  
-  const GetDepartamento = async (data) => {
-    try {
-      const newData = await get("Departamento", data);
-    } catch (error) {
-      console.error("GetDepartamento", error);
-    }
-  };
-
-  const LogOut = () => {
-    // eliminar el token de la pagina.
-    try {
-      cookies.remove("username");
-      cookies.remove("accessToken");
-      cookies.remove("refreshToken");
-      router.push("login");
-    } catch (error) {
-      console.error("GetDepartamento", error);
-    }
-  };
-
-  useEffect(() => {
-    GetDepartamento();
-  }, []);
+  const { push } = useRouter();
 
   const ShowMenu = () => {
-    var _navRoutes = Routes.filter(route =>  route.roles.includes(user?.profile))
-   
-    return _navRoutes.map((item, index) => (
-      <ListItemButton key={index}  onClick={() => push(`${item.path}`)}>
-        <ListItemIcon>
-          <SendIcon />
-        </ListItemIcon>
-        <ListItemText primary={item.name} />
-      </ListItemButton>
-    ));
-    
+    var _navRoutes = Routes.filter((route) =>
+      route.roles.includes(user?.profile)
+    );
+
+    return _navRoutes
+      .filter((item) => !item.hide)
+      .map((item, index) => (
+        <ListItemButton key={index} onClick={() => push(`${item.path}`)}>
+          <ListItemIcon>
+            <ChevronRightIcon />
+          </ListItemIcon>
+          <ListItemText primary={item.name} />
+        </ListItemButton>
+      ));
   };
 
   return (
@@ -141,43 +101,9 @@ function Dashboard() {
         <CssBaseline />
         {/* Navbar */}
         <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: "24px", // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: "36px",
-                ...(open && { display: "none" }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Dashboard
-            </Typography>
-            <Button variant="contained" onClick={LogOut}>
-              Log Out
-            </Button>
-
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
+          <NavBar   />
         </AppBar>
+      
         <Drawer variant="permanent" open={open}>
           <Toolbar
             sx={{
@@ -209,35 +135,7 @@ function Dashboard() {
             overflow: "auto",
           }}
         >
-          
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {/* <Grid container spacing={3}>
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                ></Paper>
-              </Grid>
-              <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                ></Paper>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper
-                  sx={{ p: 2, display: "flex", flexDirection: "column" }}
-                ></Paper>
-              </Grid>
-            </Grid> */}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>

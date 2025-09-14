@@ -1,0 +1,33 @@
+.custom-shape-divider-bottom-1711412436 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1711412436 svg {
+  position: relative;
+  display: block;
+  width: calc(200% + 1.3px);
+  height: 306px;
+}
+
+.custom-shape-divider-bottom-1711412436 .shape-fill {
+  fill: #9013FE80;
+}
+
+.magicpattern { 
+  width: 200%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: repeat;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 1000 1000%22 xmlns=%22http:%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3CclipPath id=%22a%22%3E%3Cpath fill=%22currentColor%22 d=%22M801.5 698q-73.5 198-281 162T157 662Q1 500 128 287.5t355-183Q711 134 793 317t8.5 381Z%22%2F%3E%3C%2FclipPath%3E%3Cpattern id=%22b%22 patternUnits=%22userSpaceOnUse%22 width=%2225%22 height=%2225%22 viewBox=%220 0 100 100%22 fill=%22%23212121%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2212.5%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg clip-path=%22url(%23a)%22%3E%3Cpath fill=%22url(%23b)%22 d=%22M801.5 698q-73.5 198-281 162T157 662Q1 500 128 287.5t355-183Q711 134 793 317t8.5 381Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+.pattern{
+  width: 200%;
+  height: 100%;
+}

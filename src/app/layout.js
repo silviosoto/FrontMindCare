@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { ProtectedRoutesProvider } from './Providers/protectedRoutes.provider';
 import { ContextProvider } from "./context/context";
+import Home from "./page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
       <ContextProvider>
+        {/* <Home></Home> */}
           <ProtectedRoutesProvider>{children}</ProtectedRoutesProvider>
 
         </ContextProvider>

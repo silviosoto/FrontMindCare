@@ -71,5 +71,5 @@ export const ProtectedRoutesProvider = (props) => {
 			)
 	} 
 
-	return loading ? <Loading /> : render(children)
+	return loading ? <></> : render(children)
 }

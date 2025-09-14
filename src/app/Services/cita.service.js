@@ -13,14 +13,19 @@ export const getCitaByPsicologo = async(idPsicologo, fecha) => {
     }
 };
  
-export const createCita = async (idpsicologo, idpaciente, hora, fecha, motivoConsulta ) =>{
+export const createCita = async (idpsicologo, idpaciente, hora, fecha,
+         motivoConsulta, idservicio, valorServicio,sesiones, ispaquete ) =>{
     try {
         const data = await post(`cita`, {
             idpsicologo: idpsicologo,
             idpaciente: idpaciente,
             hora: hora,
             fecha: fecha,
-            motivoConsulta: motivoConsulta
+            motivoConsulta: motivoConsulta,
+            idservicio: idservicio,
+            valorServicio: valorServicio,
+            sesiones: sesiones,
+            ispaquete: ispaquete
         });
         
         const result = data ? data : null;
@@ -31,9 +36,9 @@ export const createCita = async (idpsicologo, idpaciente, hora, fecha, motivoCon
     }
 }
 
-export const getCitasByPaciente= async(idPaciente) => {
+export const getCitasByPaciente= async(idPaciente, page, rowsPerPage = 10) => {
     try {
-        const data = await get(`cita/GetAppointmentByPatient/${idPaciente}`);
+        const data = await get(`cita/GetAppointmentByPatient?page=${page}&rowsPerPage=${rowsPerPage}&idPaciente=${idPaciente}`);
 
         const result = data ? data : [];
         return result

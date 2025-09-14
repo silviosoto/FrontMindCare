@@ -59,7 +59,7 @@ const validationSchema = Yup.object({
       "fileFormat",
       "Solo se permite subir archivos PDF",
       (value) => value && value.type === "application/pdf"
-    )
+    ),
 });
 
 const RgistrarForm = () => {
@@ -273,12 +273,14 @@ const RgistrarForm = () => {
           marginTop: 8,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "center",  
         }}
       >
         <AppBar position="absolute">
           <Toolbar
             sx={{
+              backgroundColor: "#fff",
+              boxShadow: "none",
               pr: "24px", // keep right padding when drawer closed
             }}
           >
@@ -293,15 +295,17 @@ const RgistrarForm = () => {
             >
               {/* <MenuIcon /> */}
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Mindcare
-            </Typography>
+            {/* Logo a la izquierda */}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <img
+                width="130"
+                height="auto"
+                className=" device img-fluid"
+                data-device="iPhoneX"
+                data-orientation="portrait"
+                src={"/images/MindCare.png"}
+              />
+            </Box>
           </Toolbar>
         </AppBar>
         <Box sx={{ m: 1 }} />
@@ -562,6 +566,12 @@ const RgistrarForm = () => {
                   />
                 }
                 label="Autorizo el uso de mis datos de acuerdo a la Declaración de privacidad y acepto los Términos y condiciones y la Autorización de tratamiento de datos."
+                sx={{
+                  "& .MuiFormControlLabel-label": {
+                    fontSize: "0.75rem", // Tamaño pequeño
+                    color: "gray", // Color gris
+                  },
+                }}
               />
               {formik.touched.termsAccepted && (
                 <FormHelperText error>

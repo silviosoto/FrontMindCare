@@ -13,6 +13,7 @@ export const getAgendaByPsicologo = async(idPsicologo, diasemana, mes, anio ) =>
     }
 };
  
+
 export const registerAgenda = async( payload )  => {
     try {
         return   await  post( `Agenda`, payload );  

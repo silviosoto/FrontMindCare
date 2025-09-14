@@ -9,12 +9,25 @@ const handleResponse = async (response) => {
     if (!response.ok) {
         const error = await response.json();
          console.log("handleResponse", error.error)
+ 
         throw new Error(error.message || 'Algo anda mal');
     }
     if (response.status === 204){
         return null;
     }
     return response.json();
+};
+
+const handleResponseCustom = async (response) => {
+
+    if (!response.ok) {
+        const error = await response.json();
+         console.log("handleResponse", error.error)
+ 
+        throw new Error(error.message || 'Algo anda mal');
+    }
+ 
+    return response;
 };
 
 export const get = async (endpoint) => {
@@ -26,6 +39,17 @@ export const get = async (endpoint) => {
         },
     });
     return handleResponse(response);
+};
+
+export const getCustom = async (endpoint) => {
+    
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        },
+    });
+    return handleResponseCustom(response);
 };
 
 export const post = async (endpoint, data) => {
@@ -80,15 +104,23 @@ export const putcustom = async (endpoint, data) => {
 };
 
 export const postNoAutenticate = async (endpoint, data) => {
-    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    try{
+        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(data),
+        });
+        
+        return handleResponse(response);
+
+    }catch (error) {
+        console.error('Error en la solicitud POST:', error);
+        
+    }
+
 };
 
 export const put = async (endpoint, data) => {

@@ -26,8 +26,10 @@ export const SideBar = (props) => {
 
   const ShowMenu = () => {
     var _navRoutes = Routes.filter(route =>  route.roles.includes(user?.profile))
-    console.log("ShowMenu",navRoutes);
-    return _navRoutes.map((item, index) => (
+    console.log("ShowMenu", );
+    return _navRoutes
+    .filter((item) => !item.hide)
+    .map((item, index) => (
       <ListItemButton key={index} onClick={() => push(`${item.path}`)}>
         <ListItemIcon>
           <ChevronRightIcon />

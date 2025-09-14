@@ -1,3 +1,4 @@
+"use client";
 import { Box, Container, CssBaseline, Toolbar } from "@mui/material";
 import { useState } from "react";
 import { NavBar } from "./NavBar.layout";

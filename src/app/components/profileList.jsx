@@ -21,9 +21,8 @@ const ProfileList = ({ profiles }) => {
       }}
     >
       {profiles.map((profile, index) => (
-        <>
           <ProfileCard
-            key={index}
+            key={profile.id}
             id={profile.id}
             name={profile.nombre}
             phone={profile.telefono}
@@ -32,7 +31,7 @@ const ProfileList = ({ profiles }) => {
             experience={profile.experiencia || 0}
             onViewProfile={handleViewProfile}
           />
-        </>
+
       ))}
     </Box>
   );

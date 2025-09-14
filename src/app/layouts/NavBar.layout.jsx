@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,14 +9,18 @@ import {
   Badge,
 } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import MenuIcon from "@mui/icons-material/Menu"; 
+import MenuIcon from "@mui/icons-material/Menu";
 import { useCookie } from "../hooks/useCookie.hook";
 import { useRouter } from "next/navigation";
+import UserAvatarMenu from "@/app/components/UserAvatarMenu.component";
+import { useAppContext } from "../../app/context/context";
 
 export const NavBar = (props) => {
   const { open, toggleDrawer } = props;
   const router = useRouter();
   const cookies = useCookie();
+  const { user } = useAppContext();
+  const [userPlatform, setUserPlatform] = useState();
   const LogOut = () => {
     // eliminar el token de la pagina.
     try {
@@ -27,25 +33,27 @@ export const NavBar = (props) => {
     }
   };
 
+  useEffect(() => { 
+    setUserPlatform(user);
+  }, [user]);
+
   return (
-    <AppBar 
+    <AppBar
       position="absolute"
       open={open}
-      // ccambia la apaciencia de la barra 
       sx={{
         backgroundColor: "#f5f5f5", // Fondo gris claro
         color: "#000", // Texto negro
         boxShadow: "none", // Sin sombra
         borderBottom: "1px solid #bdbdbd", // Borde gris oscuro
       }}
-      >
+    >
       <Toolbar
         sx={{
           pr: "24px", // keep right padding when drawer closed
-          backgroundColor: "#f5f5f5", // Cambia a gris claro
+          backgroundColor: "#ffffff", // Cambia a gris claro
           color: "#000", // Cambia el color del texto a negro
         }}
-
         elevation={0} // Para un efecto de sombra más ligero
       >
         <IconButton
@@ -66,24 +74,14 @@ export const NavBar = (props) => {
           color="inherit"
           noWrap
           sx={{ flexGrow: 1 }}
-        >
-          
-        </Typography>
-        <Button variant="contained" 
-			    onClick={LogOut}
-			>
-          Log Outs
-        </Button>
-
-        <IconButton color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
+        ></Typography>
+        <UserAvatarMenu
+          userName={userPlatform?.fullName || "Usuarios"}
+          avatarUrl={""}
+          onLogout={LogOut}
+        /> 
       </Toolbar>
     </AppBar>
   );
 };
-
-// sx={{ bgcolor: 'transparent', color: 'primary.main', boxShadow: 'none' }}
-// sx={{ textAlign: 'rigth', fontWeight: 'bold', textTransform: 'uppercase' }}
+ 

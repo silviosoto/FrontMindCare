@@ -19,6 +19,7 @@ import {
   AppBar,
   Chip,
   Stack,
+  Divider,
 } from "@mui/material";
 import { Form, Formik, useFormik } from "formik";
 import * as Yup from "yup";
@@ -33,14 +34,13 @@ import {
   getHobbiesbyUser,
   deleteHobbies,
   updatePacient,
-  updateImagePacient
+  updateImagePacient,
 } from "../Services/Paciente.service";
-import { postcustom } from "../Services/apiService";
 import moment from "moment";
 import { useAppContext } from "../context/context";
 import Image from "next/image";
 import { useSimpleAlert } from "../hooks/useSwal";
-
+import Cookies from "js-cookie";
 // Esquema de validación con Yup
 const validationSchema = Yup.object({
   nombre: Yup.string().required("La campo es obligatorio"),
@@ -54,30 +54,10 @@ const validationSchemaImage = Yup.object({
   // image: Yup.mixed().required("Profile image is required"),
 });
 
-// const validationSchema = Yup.object({
-//   nombre: Yup.string()
-//     .required("La campo es obligatorio")
-//     .max(500, "La nombre no puede exceder los 500 caracteres"),
-//   apellidos: Yup.string()
-//     .required("El campo es obligatorio")
-//     .max(500, "El campo apellidos no puede exceder los 500 caracteres"),
-//   fechaNacimiento: Yup.date().required("El campo es obligatorio"),
-//   email: Yup.string().email().required("El campo es obligatorio"),
-//   telefono: Yup.number().nullable().required("La campo es obligatorio"),
-//   descripcion: Yup.string().required("El campo es obligatorio"),
-//   numeroId: Yup.number().required("La campo es obligatorio"),
-//   experiencia: Yup.number().required("La campo es obligatorio"),
-//   departamento: Yup.string().required("El campo es obligatorio"),
-//   ciudad: Yup.string().required("El campo es obligatorio"),
-//   descripcion: Yup.string().required("El campo es obligatorio"),
-//   psicologoIdiomas: Yup.array()
-//     .min(1, "Debe seleccionar al menos una idioma")
-//     .required("El campo es obligatorio")
-// });
-
 const RgistrarForm = () => {
   const imageProfile = "/images/ProfileImage.png";
   const { user } = useAppContext();
+  const [userid, setUser] = useState(null);
   const [selectDepartamentos, setSelectDepartamentos] = useState([]);
   const [selectIdiomas, setselectIdiomas] = useState([]);
   const [selectMunicipios, setSelectMunicipios] = useState([]);
@@ -214,11 +194,9 @@ const RgistrarForm = () => {
       .catch((e) => {});
   };
 
-  const GetPaciente = async () => {
-    if (user == null) return;
-
+  const GetPaciente = async (userid) => {
     try {
-      const data = await getPaciente(user.userid);
+      const data = await getPaciente(userid);
       var paciente = data.paciente;
       // console.log("paciente", paciente)
       const imageBlob = `data:image/jpeg;base64,${data.imageBase64}`;
@@ -248,7 +226,7 @@ const RgistrarForm = () => {
             })
             .catch((e) => {});
         }
-        
+
         formik.setValues({
           id: paciente.id,
           estado: paciente.estado,
@@ -311,9 +289,10 @@ const RgistrarForm = () => {
     }
   };
 
-  const GetHobiesPorPsicologo = async () => {
+  const GetHobiesPorPsicologo = async (userid) => {
     try {
-      const data = await getHobbiesbyUser(user.userid);
+      console.log("GetHobiesPorPsicologo", userid);
+      const data = await getHobbiesbyUser(userid);
       if (data != undefined) {
         let listHobbies = data.map((hobbie) => ({
           // ...hobbie,
@@ -346,78 +325,67 @@ const RgistrarForm = () => {
   };
 
   const EnviarImagen = async (values, { setSubmitting, resetForm }) => {
-    
     try {
       const formData = new FormData();
       formData.append("image", values.image);
-      const data = await updateImagePacient(PacienteId, formData); 
+      const data = await updateImagePacient(PacienteId, formData);
       simpleAlert("Guardado con exito", "", "success");
       resetForm();
     } catch (error) {
       simpleAlert("Algo salió mal", "", "error");
-    }finally {
+    } finally {
       setSubmitting(false);
-    } 
- 
+    }
   };
 
   useEffect(() => {
-    GetPaciente();
+    const userid = Cookies.get("userid");
+    setUser(userid ?? null);
+  }, []);
+
+  useEffect(() => {
+    const userid = Cookies.get("userid");
+    GetPaciente(userid);
     GetDepartamentos();
     GetIdiomasPsicologo();
-    GetHobiesPorPsicologo();
+    GetHobiesPorPsicologo(userid);
   }, []);
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main">
       <Box
         sx={{
-          marginTop: 8,
+          width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          backgroundColor: "white",
+          borderRadius: 3,
+          boxShadow: 4,
+          p: 3,
         }}
       >
-        <AppBar position="absolute">
-          <Toolbar
-            sx={{
-              pr: "24px", // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{
-                marginRight: "36px",
-                ...(open && { display: "none" }),
-              }}
-            >
-              {/* <MenuIcon /> */}
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Mindcare
-            </Typography>
-          </Toolbar>
-        </AppBar>
         <Box sx={{ m: 1 }} />
-        <Typography component="h1" variant="h5">
-          Perfil
-        </Typography>
+
         <Grid container spacing={2}>
           <Grid item xs={12}>
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{
+                textAlign: "center",
+                mb: 1,
+              }}
+            >
+              Paciente Perfil
+            </Typography>
+            <Divider sx={{ backgroundColor: "#ccc", mb: 3 }} />
             <Formik
               initialValues={{ image: "" }}
               validationSchema={validationSchemaImage}
-              onSubmit={ EnviarImagen}
+              onSubmit={EnviarImagen}
             >
-              {({ setFieldValue, isSubmitting, values}) => (
+              {({ setFieldValue, isSubmitting, values }) => (
                 <Form>
                   <Box sx={{ mb: 2 }}>
                     {preview && (
@@ -439,22 +407,23 @@ const RgistrarForm = () => {
                         onChange={(event) => {
                           setFieldValue("image", event.currentTarget.files[0]);
                           handleFileChange(event);
-
                         }}
                       />
                     </Button>
 
-                    <Grid item xs={12}  sx={{ mt: 2 }}>
-                      {(values.image ) && (<Button 
-                        fullWidth
-                        disabled={!values.image  || isSubmitting }
-                        type="submit" 
-                        variant="contained" 
-                        color="primary">
-                        enviar
-                      </Button>
-                    )  }
-                   </Grid>
+                    <Grid item xs={12} sx={{ mt: 2 }}>
+                      {values.image && (
+                        <Button
+                          fullWidth
+                          disabled={!values.image || isSubmitting}
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                        >
+                          enviar
+                        </Button>
+                      )}
+                    </Grid>
                   </Box>
                 </Form>
               )}
@@ -463,7 +432,6 @@ const RgistrarForm = () => {
         </Grid>
         <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-
             <Grid item xs={6}>
               <TextField
                 fullWidth

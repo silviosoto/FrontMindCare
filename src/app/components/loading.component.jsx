@@ -1,3 +1,4 @@
+'use client';
 import { Grid, Typography, CircularProgress } from "@mui/material"
 
 export const Loading = () => {

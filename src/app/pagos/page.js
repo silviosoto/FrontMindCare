@@ -1,9 +1,10 @@
 "use client";
 import { Grid, Box, Typography, Divider } from "@mui/material";
 import "dayjs/locale/es";
-import Citas from "@/app/components/Cita.component.jsx";
 
-const CitasList = () => {
+import Pagos from "../components/Pagos.component";
+
+const MisPagos = () => {
   return (
     <Grid component="main">
       <Box
@@ -27,10 +28,10 @@ const CitasList = () => {
                 mb: 1,
               }}
             >
-              Mis Citas
+             Mis pagos
             </Typography>
             <Divider sx={{ backgroundColor: "#ccc", mb: 4 }} />
-            <Citas></Citas>
+            <Pagos></Pagos>
           </Grid>
         </Grid>
       </Box>
@@ -38,4 +39,4 @@ const CitasList = () => {
   );
 };
 
-export default CitasList;
+export default MisPagos;

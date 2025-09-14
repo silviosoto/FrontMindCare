@@ -30,34 +30,35 @@ export const Routes = [
 		roles: [ "Paciente" ]
 	},
 	{
-		name: "psicologos",
+		name: "Psicologos",
 		path: "/listaPsicologos",
 		roles: [ "Paciente" ]
 	},
 	{
-		name: "psicologo",
+		name: "Psicologo",
 		path: "/psicologo",
+		hide: true,
 		roles: [ "Paciente" ]
 	},
 	{
-		name: "cita",
+		name: "Cita",
 		path: "/cita",
 		roles: [ "Paciente" ]
 	},
 	{
-		name: "appointment",
+		name: "Appointment",
 		path: "/appointment",
+		hide: true,
 		roles: [ "Paciente" ]
-	},
-	// {
-	// 	name: "call",
-	// 	path: "/call",
-	// 	roles: [ "Paciente", "Psicologo" ]
-	// },
-	// {
-	// 	name: "registrerpacient",
-	// 	path: "/registrerPacient",
-	// 	layout: false,
-	// 	roles: []
-	// }
+	}, 
+	{
+		name: "Facturación",
+		path: "/billing",
+		roles: [ "SuperAdmin", "Admin" ]
+	}, 
+	{
+		name: "Mis pagos",
+		path: "/pagos",
+		roles: [ "Paciente" ]
+	}, 
 ]; 

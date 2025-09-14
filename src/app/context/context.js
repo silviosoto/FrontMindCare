@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useCookie } from "../hooks/useCookie.hook";
 export const ContextStore = createContext();
@@ -17,7 +17,8 @@ export const ContextProvider = (props) => {
 			{
 				userid : cookieStorage.get("userid"),
 				user : cookieStorage.get("username"),
-				profile: cookieStorage.get("profile")
+				profile: cookieStorage.get("profile"),
+				fullName: cookieStorage.get("fullName")
 			}
 		);
  	}, [])

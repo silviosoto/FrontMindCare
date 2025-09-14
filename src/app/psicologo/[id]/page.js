@@ -19,16 +19,18 @@ import {
   InputLabel,
   MenuItem,
   Button,
+  ListItemAvatar,
+  Divider,
 } from "@mui/material";
 import {
   getPsicologo,
-  getHobbiesbyUser
+  getHobbiesbyUser,
 } from "../../Services/register.service";
-import {
-  getListaServiciosPorPsicologo, 
-} from "../../Services/profilePsicology.service";
+import { getListaServiciosPorPsicologo } from "../../Services/profilePsicology.service";
 import AvailabilityPicker from "@/app/components/AvailabilityPicker.component";
-
+import  ListaResenasPsicologo from "@/app/components/comments.component";
+import PsychologyIcon from "@mui/icons-material/Psychology"; // Ícono representativo
+import PerfilPsicologo from "@/app/components/ProfilePsicologo.component"; // Ícono representativo
 export default function Page() {
   const { id } = useParams();
   const imageProfile = "https://via.placeholder.com/150";
@@ -48,25 +50,24 @@ export default function Page() {
       var psicologo = data.psicologo;
       const imageBlob = `data:image/jpeg;base64,${data.imageBase64}`;
       var datospersonales = psicologo.idDatosPersonalesNavigation;
-      console.log("GetPsicologo",datospersonales.id)
-      GetHobies(datospersonales.id)
-      setIdDatosPersonales(datospersonales.id)
+      console.log("GetPsicologo", datospersonales.id);
+      GetHobies(datospersonales.id);
+      setIdDatosPersonales(datospersonales.id);
       setPsicologo(psicologo);
       setDatosPersonales(datospersonales);
       setPreview(imageBlob);
- 
     } catch (error) {
       console.log("GetPsicologo", error);
     }
   };
- 
+
   const GetHobies = async (id) => {
-    if(id === undefined) return;
+    if (id === undefined) return;
 
     try {
       const data = await getHobbiesbyUser(id);
       if (data != undefined) {
-        let listHobbies = data.map((hobbie) => ({        
+        let listHobbies = data.map((hobbie) => ({
           name: hobbie.nombre,
           id: hobbie.id,
         }));
@@ -76,52 +77,48 @@ export default function Page() {
     } catch (error) {
       console.log("GetHobiesPorPsicologo", error);
     }
-
   };
 
-  const handleClick = () => {
-    router.push(`/appointment?psicologo=${id}`);
+  const handleClick = ( isPackage = false ) => {
+    router.push(`/appointment?psicologo=${id}&ispackage=${isPackage}`);
   };
 
-  // const GetServiciosPorPsicologo = async (id) => {
-  //   try {
-  //     const data = await getListaServiciosPorPsicologo(id);
-  //     if (data != undefined) {
-  //       console.log(data)
-  //       setServicios(data ?? []);
-        
-  //     }
-  //   } catch (error) {
-  //     console.log("GetServiciosPorPsicologo", error);
-  //   }
-  // };
+  const GetServiciosPorPsicologo = async (id) => {
+    try {
+      const data = await getListaServiciosPorPsicologo(id);
+      if (data != undefined) {
+        console.log(data);
+        setServicios(data ?? []);
+      }
+    } catch (error) {
+      console.log("GetServiciosPorPsicologo", error);
+    }
+  };
 
-  // const ListSelectServicios =() =>{
-   
-      
-  //   let list = servicios.map((a, y) => (
-  //     <MenuItem key={y+1} value={a.id}>
-  //       {a.servicioNombre}
-  //     </MenuItem>
-  //   ));
+  const ListSelectServicios = () => {
+    let list = servicios.map((a, y) => (
+      <MenuItem key={y + 1} value={a.id}>
+        {a.servicioNombre}
+      </MenuItem>
+    ));
 
-  //   list.unshift( 
-  //     <MenuItem key={0} value={0}>
-  //       {"Seleccione un servicio"}
-  //     </MenuItem>)
+    list.unshift(
+      <MenuItem key={0} value={0}>
+        {"Seleccione un servicio"}
+      </MenuItem>
+    );
 
-  //   return list
-  // }
- 
+    return list;
+  };
+
   useEffect(() => {
     GetPsicologo(id);
-   
-    // GetServiciosPorPsicologo(id);    
+    GetServiciosPorPsicologo(id);
   }, []);
-  
+
   return (
     <Box sx={{ display: "flex", justifyContent: "left", p: 2 }}>
-       <Paper
+      <Paper
         elevation={3}
         sx={{
           p: 3,
@@ -129,94 +126,115 @@ export default function Page() {
           borderRadius: 2,
         }}
       >
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} display="flex" justifyContent="center">
-          <Avatar
-            src={preview}
-            sx={{ width: 120, height: 120 }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={8}>
-            <Typography variant="h5"></Typography>
-            <Typography variant="body1" color="text.secondary">
-             {datospersonales?.nombre}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {datospersonales?.telefono}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-            {psicologo?.experiencia} años
-            </Typography>
+        <Grid container spacing={2}>
+          <PerfilPsicologo />
+          
+          <Grid item xs={12} sm={12}>
+            <Divider variant="inset"  />
           </Grid>
           {/* ABOUT ME  */}
+          <Grid item xs={12} lg={6}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Acerca de mi{" "}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">{psicologo?.descripcion}</Typography>
+          </Grid>
+          {/* hobies */}
           <Grid item xs={12} lg={12}>
-            <Typography variant="subtitle1" fontWeight="bold">Acerca de mi </Typography>
-            <Typography variant="body2">{psicologo?.descripcion}</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Hobies:
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {hobbies.map((hobby) => (
+                <Chip key={hobby.id} label={hobby.name} color="text.secondary" />
+              ))}
+            </Box>
           </Grid>
           {/* SERICIOS */}
-          <Grid item xs={6} lg={6} >
-            <Typography variant="subtitle1" fontWeight="bold">Servicios</Typography>
-            <List 
-             sx={{
-              width: '100%',
-              maxWidth: 500,
-              bgcolor: 'background.paper',
-              position: 'relative',
-              overflow: 'auto',
-              maxHeight: 300,
-              '& ul': { padding: 0 },
-            }}
+          <Grid item xs={6} lg={6}>
+            <Typography 
+            variant="subtitle1" 
+            fontWeight="bold">
+              Servicios
+            </Typography>
+            <List
+              sx={{
+                width: "100%",
+                maxWidth: 500,
+                bgcolor: "background.paper",
+                position: "relative",
+                overflow: "auto",
+                maxHeight: 300,
+                "& ul": { padding: 0 },
+              }}
             >
-              {servicios?.map((servicio) => (
-                <ListItem 
-                  key={servicio.id} 
-                  divider 
-                  secondaryAction={
-                   `$${servicio.valor}` 
-                  }
+              {servicios.map((servicio, index) => (
+                <React.Fragment key={index}>
+                  <ListItem
+                    alignItems="flex-start"
+                    key={servicio.id}
+                    secondaryAction={`$${servicio.valor}`}
                   >
-                  <ListItemText primary={servicio.servicioNombre}  />
-                </ListItem>
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: "primary.main" }}>
+                        <PsychologyIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="medium"
+                          color="text.primary"
+                        >
+                          {servicio.servicioNombre}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {servicio.servicioNombre}
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                  {index < servicios.length - 1 && (
+                    <Divider variant="inset" component="li" />
+                  )}
+                </React.Fragment>
               ))}
             </List>
           </Grid>
-          <Grid item xs={12} lg={6} >
-            <Typography variant="subtitle1" fontWeight="bold">Agendar cita:</Typography>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-               {/* <InputLabel id="Servicio-label">Servicio</InputLabel>
-                             <Select
-                               labelId="Servicio-label"
-                               id="servicio"
-                               name="servicio"
-                               // value={formik.values.departamento}
-                               // onChange={formik.handleChange}
-                               // onChange={handleSelectChange}
-             
-                               label="Servicio"
-                               defaultValue="0"
-                             >
-                               {ListSelectServicios()}
-                             </Select> */}
-                {/* <AvailabilityPicker></AvailabilityPicker> */}
-            </Box>
+
+          <Grid item xs={6} lg={6}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Agendar cita:
+            </Typography>
+        
             <Box align="center">
-                <Button  onClick={handleClick} variant="contained" >Apartar cita</Button>
+              <Button onClick={()=>handleClick(false)} variant="contained">
+                Apartar cita
+              </Button>
+            </Box> 
+          </Grid>
+          <Grid item xs={6} lg={6}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Ahora mas:
+            </Typography>
+        
+            <Box align="center">
+              <Button onClick={()=>handleClick(true)} variant="contained">
+                Paquetes
+              </Button>
             </Box>
           </Grid>
-          {/* hobies */}
-          <Grid item xs={6} lg={12} >
-            <Typography variant="subtitle1" fontWeight="bold">Hobies:</Typography>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {hobbies.map((hobby) => (
-                    <Chip                    
-                      key={hobby.id}
-                      label={hobby.name}
-                      color="primary"
-                    />
-                  ))}
-                </Box>
+          <Grid item xs={12} lg={6}>
+            {/* <ListaResenasPsicologo /> */}
           </Grid>
-      </Grid> 
+        </Grid>
       </Paper>
     </Box>
   );

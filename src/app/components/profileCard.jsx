@@ -2,7 +2,7 @@ import React , { useEffect, useState }from "react";
 import { Button, Card, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import { Event, Visibility, Work } from "@mui/icons-material";
 const MAX_CHARACTERS = 100;
-const ProfileCard = ({id,  name, phone, imageUrl, descripcion, experience, onViewProfile }) => {
+const ProfileCard = ({ id,  name, phone, imageUrl, descripcion, experience, onViewProfile }) => {
     const imageProfile = "/images/ProfileImage.png";
     const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -17,6 +17,7 @@ const ProfileCard = ({id,  name, phone, imageUrl, descripcion, experience, onVie
   return (
    
     <Card
+    key={id}
     style={{
       maxWidth: 300,
       margin: 16,
